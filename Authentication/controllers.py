@@ -1,3 +1,5 @@
+
+#uygulama ile bağlantılar sonradan kurulacak
 # "flask" frameworku importlar
 from flask import Blueprint, request, \
                   jsonify, make_response
