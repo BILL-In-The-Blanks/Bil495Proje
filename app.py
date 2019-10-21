@@ -10,6 +10,12 @@ class Receipt(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(200), nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    #tag = db.Column(db.String(30), nullable=False, default="Common Expenses")
+    #belonging_user_id = db.Column(db.Integer, primary_key=False)
+    #total_cost = db.Column(db.Float, nullable=False, default=25)
+    #location = db.Column(db.String(100), nullable=False, default="Ankara")
+    #photo should exist as a column as well
+    
 
     def __repr__(self):
         return '<Receipt %r>' % self.id

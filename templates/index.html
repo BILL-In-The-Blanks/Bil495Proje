@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<title>Task Master</title>
+<title>Bil495 Project</title>
 {% endblock %}
 
 {% block body %}
@@ -13,12 +13,16 @@
     <table>
         <tr>
             <th>Receipt Content</th>
+            <th>Total Cost</th>
+            <th>Location</th>
             <th>Date</th>
             <th>Actions</th>
         </tr>
         {% for receipt in receipts %}
             <tr>
                 <td>{{ receipt.content }}</td>
+                <td>{{ receipt.total_cost }}</td>
+                <td>{{ receipt.location }}</td>
                 <td>{{ receipt.date_created.date() }}</td>
                 <td>
                     <a href="/delete/{{receipt.id}}">Delete</a>
