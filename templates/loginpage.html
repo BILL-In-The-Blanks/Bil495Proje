@@ -4,10 +4,10 @@
 </head>
 <body>
 <form name="loginForm" method="post" action="login.php">
-<table width="20%" bgcolor="0099CC" align="center">
+<table width="20%" bgcolor="C0C0C0" align="center">
 
 <tr>
-<td colspan=2><center><font size=4><b>HTML Login Page</b></font></center></td>
+<td colspan=2><center><font size=4><b>BILL IN THE BLANKS RECEIPT APP</b></font></center></td>
 </tr>
 
 <tr>
@@ -21,8 +21,9 @@
 </tr>
 
 <tr>
-<td ><input type="Reset"></td>
+<td><input type="submit" onclick="return check(this.form)" value="Sign Up"></td>
 <td><input type="submit" onclick="return check(this.form)" value="Login"></td>
+
 </tr>
 
 </table>
@@ -31,7 +32,7 @@
 function check(form)
 {
 
-if(form.userid.value == "Roseindia" && form.pwd.value == "Roseindia")
+if(form.userid.value == "Erhan" && form.pwd.value == "1234")
 {
 	return true;
 }
