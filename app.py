@@ -10,10 +10,10 @@ class Receipt(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(200), nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
-    #tag = db.Column(db.String(30), nullable=False, default="Common Expenses")
-    #belonging_user_id = db.Column(db.Integer, primary_key=False)
-    #total_cost = db.Column(db.Float, nullable=False, default=25)
-    #location = db.Column(db.String(100), nullable=False, default="Ankara")
+    tag = db.Column(db.String(30), nullable=False, default="Common Expenses")
+    belonging_user_id = db.Column(db.Integer, primary_key=False)
+    total_cost = db.Column(db.Float, nullable=False, default=25)
+    location = db.Column(db.String(100), nullable=False, default="Ankara")
     #photo should exist as a column as well
     
 
@@ -25,7 +25,11 @@ class Receipt(db.Model):
 def index():
     if request.method == 'POST':
         receipt_content = request.form['content']
-        new_receipt = Receipt(content=receipt_content)
+        receipt_location = request.form['location']
+        receipt_tag = request.form['tag'] 
+        receipt_total_cost = request.form['total_cost']
+
+        new_receipt = Receipt(content=receipt_content, total_cost=receipt_total_cost, location=receipt_location, tag=receipt_tag)
 
         try:
             db.session.add(new_receipt)

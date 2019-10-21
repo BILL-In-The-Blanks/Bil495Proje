@@ -15,6 +15,7 @@
             <th>Receipt Content</th>
             <th>Total Cost</th>
             <th>Location</th>
+            <th>Category</th>
             <th>Date</th>
             <th>Actions</th>
         </tr>
@@ -23,6 +24,7 @@
                 <td>{{ receipt.content }}</td>
                 <td>{{ receipt.total_cost }}</td>
                 <td>{{ receipt.location }}</td>
+                <td>{{ receipt.tag }}</td>
                 <td>{{ receipt.date_created.date() }}</td>
                 <td>
                     <a href="/delete/{{receipt.id}}">Delete</a>
@@ -36,9 +38,18 @@
 
     <div class="form">
         <form action="/" method="POST">
+        	<th>Content</th>
             <input type="text" name="content" id="content">
+            <th>Total Cost</th> 
+            <input type="text" name="total_cost" id="total_cost">  <br>
+            <th>Location</th>
+            <input type="text" name="location" id="location">  <br>
+            <th>Category</th>
+            <input type="text" name="tag" id="tag">  <br>
+            <br>
             <input type="submit" value="Add Receipt">
         </form>
     </div>
+
 </div>
 {% endblock %}
