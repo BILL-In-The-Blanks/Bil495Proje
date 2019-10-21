@@ -3,7 +3,7 @@
 
 
 
-
+#yeni kullanici olusturma
 @mod_auth.route('/signup', methods=['POST'])        
 def add_user():
     data = request.json
@@ -14,3 +14,4 @@ def add_user():
     db.session.add(new_user)
     db.session.commit()
     return user_schema.jsonify(new_user)
+
