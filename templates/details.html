@@ -24,13 +24,13 @@
         </tr>
         
             <tr>
-                <td>{{ receipt.content }}</td>
+                <td>{{ receipt.name }}</td>
                 <td>{{ receipt.total_cost }}</td>
                 <td>{{ receipt.location }}</td>
                 <td>{{ receipt.tag }}</td>
                 <td>{{ receipt.date_created.date() }}</td>
                 <td>
-                    <a href="/update/{{receipt.id}}">Enter Details</a>
+                    <a href="/enter_details/{{receipt.id}}">Enter Details</a>
                     <br>
                     <br>
                     <a href="/">Back</a>
@@ -48,7 +48,7 @@
         
             <tr>
 
-                <td>{{ "Details.." }}</td>
+                <td>{{ receipt.content }}</td>
 
         </tr>
         

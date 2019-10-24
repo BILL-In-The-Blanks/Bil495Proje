@@ -8,7 +8,8 @@ db = SQLAlchemy(app)
 
 class Receipt(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.String(200), nullable=False)
+    name = db.Column(db.String(50), nullable=False)
+    content = db.Column(db.String(200), default="Details..")
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     tag = db.Column(db.String(30), nullable=False, default="Common Expenses")
     belonging_user_id = db.Column(db.Integer, primary_key=False)
@@ -24,12 +25,12 @@ class Receipt(db.Model):
 @app.route('/', methods=['POST', 'GET'])
 def index():
     if request.method == 'POST':
-        receipt_content = request.form['content']
+        receipt_name = request.form['name']
         receipt_location = request.form['location']
         receipt_tag = request.form['tag'] 
         receipt_total_cost = request.form['total_cost']
 
-        new_receipt = Receipt(content=receipt_content, total_cost=receipt_total_cost, location=receipt_location, tag=receipt_tag)
+        new_receipt = Receipt(name=receipt_name,total_cost=receipt_total_cost, location=receipt_location, tag=receipt_tag)
 
         try:
             db.session.add(new_receipt)
@@ -72,7 +73,7 @@ def update(id):
     receipt = Receipt.query.get_or_404(id)
 
     if request.method == 'POST':
-        receipt.content = request.form['content']
+        receipt.name = request.form['name']
 
         try:
             db.session.commit()
@@ -82,6 +83,22 @@ def update(id):
 
     else:
         return render_template('update.html', receipt=receipt)
+
+@app.route('/enter_details/<int:id>', methods=['GET', 'POST'])
+def enter_details(id):
+    receipt = Receipt.query.get_or_404(id)
+
+    if request.method == 'POST':
+        receipt.content = request.form['content']
+
+        try:
+            db.session.commit()
+            return redirect('/')
+        except:
+            return 'There was an issue updating your receipt details'
+
+    else:
+        return render_template('update_2.html', receipt=receipt)
 
 
 if __name__ == "__main__":
