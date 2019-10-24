@@ -72,9 +72,10 @@ def details(id):
 def update(id):
     receipt = Receipt.query.get_or_404(id)
 
+
     if request.method == 'POST':
         receipt.name = request.form['name']
-
+        #receipt.date_created = request.form['date']
         try:
             db.session.commit()
             return redirect('/')

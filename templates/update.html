@@ -11,13 +11,14 @@
     <div class="form">
         <form action="/update/{{receipt.id}}" method="POST">
         	Name
-            <input type="text" name="name" id="name" ><br>
+            <input type="text" name="name" id="name" value="{{receipt.name}}" ><br>
             Cost
-            <input type="text" name="cost" id="cost" ><br>
+            <input type="text" step="0.01" name="total_cost" id="total_cost" value="{{receipt.total_cost}}"><br>
             Location
-            <input type="text" name="location" id="location" ><br>
+            <input type="text" name="location" id="location" value="{{receipt.location}}"><br>
             Category
-            <input type="text" name="category" id="category" ><br>
+            <input type="text" name="category" id="category" value="{{receipt.tag}}"><br>
+            
             
             <input type="submit" value="Update">
         </form>
