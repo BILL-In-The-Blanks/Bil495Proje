@@ -1,11 +1,21 @@
-from flask import Flask, render_template, url_for, request, redirect
+from flask import Flask, render_template, url_for, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from werkzeug.utils import secure_filename
+import os
 
+
+PATH = os.getcwd()
+UPLOAD_FOLDER = "/uploads"
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///receipts.db'
 db = SQLAlchemy(app)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 class Receipt(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -16,6 +26,7 @@ class Receipt(db.Model):
     belonging_user_id = db.Column(db.Integer, primary_key=False)
     total_cost = db.Column(db.Float, nullable=False, default=25)
     location = db.Column(db.String(100), nullable=False, default="Ankara")
+    photo_path = db.Column(db.String(100), nullable=False, default="")
     #photo should exist as a column as well
     
 
@@ -31,7 +42,19 @@ def index():
         receipt_tag = request.form['tag'] 
         receipt_total_cost = request.form['total_cost']
 
-        new_receipt = Receipt(name=receipt_name,total_cost=receipt_total_cost, location=receipt_location, tag=receipt_tag)
+       
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(PATH + UPLOAD_FOLDER, filename))
+            receipt_photo_path = os.path.join(PATH + UPLOAD_FOLDER, filename)
+        else:
+            receipt_photo_path = ""
+            
+
+        new_receipt = Receipt(name=receipt_name,total_cost=receipt_total_cost, location=receipt_location, tag=receipt_tag, photo_path=receipt_photo_path)
 
         try:
             db.session.add(new_receipt)
@@ -79,6 +102,16 @@ def update(id):
         receipt.tag = request.form['category']
         receipt.location = request.form['location']
         date_created = request.form['date_created']
+
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(PATH + UPLOAD_FOLDER, filename))
+            receipt.photo_path = os.path.join(PATH + UPLOAD_FOLDER, filename)
+        else:
+            receipt_photo_path = ""
 
         #Convert browser date format to sqlite date format 
         Ddate_created = datetime.strptime(date_created, '%Y-%m-%d')

@@ -20,6 +20,7 @@
             <th>Location</th>
             <th>Category</th>
             <th>Date</th>
+            <th>Photo</th>
             <th>Actions</th>
         </tr>
         
@@ -29,6 +30,11 @@
                 <td>{{ receipt.location }}</td>
                 <td>{{ receipt.tag }}</td>
                 <td>{{ receipt.date_created.date() }}</td>
+                {% if receipt.photo_path != "" %}
+                <td>{{ "Photo exists" }}</td>
+                {% else %}
+                <td>{{ "No Photo" }}</td>
+                {% endif %}
                 <td>
                     <a href="/enter_details/{{receipt.id}}">Enter Details</a>
                     <br>

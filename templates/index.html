@@ -17,6 +17,7 @@
             <th>Location</th>
             <th>Category</th>
             <th>Date</th>
+            <th>Photo</th>
             <th>Actions</th>
         </tr>
         {% for receipt in receipts %}
@@ -26,6 +27,11 @@
                 <td>{{ receipt.location }}</td>
                 <td>{{ receipt.tag }}</td>
                 <td>{{ receipt.date_created.date() }}</td>
+                {% if receipt.photo_path != "" %}
+                <td>{{ "Photo exists" }}</td>
+                {% else %}
+                <td>{{ "No Photo" }}</td>
+                {% endif %}
                 <td>
                     <a href="/delete/{{receipt.id}}">Delete</a>
                     <br>
@@ -39,7 +45,7 @@
     {% endif %}
 
     <div class="form">
-        <form action="/" method="POST">
+        <form enctype=multipart/form-data action="/" method="POST">
         	<th>Name</th>
             <input type="text" name="name" id="name"> <br>
             <th>Total Cost</th> 
@@ -48,7 +54,9 @@
             <input type="text" name="location" id="location">  <br>
             <th>Category</th>
             <input type="text" name="tag" id="tag">  <br>
-            <input type="submit" value="Add Receipt">
+            <th>Photo</th>
+            <input type="file" name="file" id="file">  <br>
+            <input type="Submit" value="Add Receipt">
         </form>
     </div>
 
