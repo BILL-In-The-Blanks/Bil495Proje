@@ -2,6 +2,7 @@ from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///receipts.db'
 db = SQLAlchemy(app)
@@ -77,7 +78,13 @@ def update(id):
         receipt.total_cost = request.form['total_cost']
         receipt.tag = request.form['category']
         receipt.location = request.form['location']
-        #receipt.date_created = request.form['date']
+        date_created = request.form['date_created']
+
+        #Convert browser date format to sqlite date format 
+        Ddate_created = datetime.strptime(date_created, '%Y-%m-%d')
+        
+        receipt.date_created = Ddate_created.date()
+
         try:
             db.session.commit()
             return redirect('/')
