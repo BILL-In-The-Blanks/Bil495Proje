@@ -58,8 +58,7 @@ def delete(id):
 @app.route('/details/<int:id>', methods=['GET', 'POST'])
 def details(id):
     receipt = Receipt.query.get_or_404(id)
-    receipt_to_detail = Receipt.query.get_or_404(id)
-
+    
     if request.method == 'POST':
         try:
             return redirect('/')
@@ -75,6 +74,9 @@ def update(id):
 
     if request.method == 'POST':
         receipt.name = request.form['name']
+        receipt.total_cost = request.form['total_cost']
+        receipt.tag = request.form['category']
+        receipt.location = request.form['location']
         #receipt.date_created = request.form['date']
         try:
             db.session.commit()
