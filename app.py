@@ -6,7 +6,7 @@ import os
 
 
 PATH = os.getcwd()
-UPLOAD_FOLDER = "/uploads"
+UPLOAD_FOLDER = "/static/uploads"
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app = Flask(__name__)
@@ -49,7 +49,7 @@ def index():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(PATH + UPLOAD_FOLDER, filename))
-            receipt_photo_path = os.path.join(PATH + UPLOAD_FOLDER, filename)
+            receipt_photo_path = os.path.join(UPLOAD_FOLDER, filename)
         else:
             receipt_photo_path = ""
             
@@ -109,7 +109,7 @@ def update(id):
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(PATH + UPLOAD_FOLDER, filename))
-            receipt.photo_path = os.path.join(PATH + UPLOAD_FOLDER, filename)
+            receipt.photo_path = os.path.join(UPLOAD_FOLDER, filename)
         else:
             receipt_photo_path = ""
 
