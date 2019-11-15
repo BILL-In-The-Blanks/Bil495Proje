@@ -6,11 +6,14 @@
 
 {% block body %}
 <div class="content">
-    <h1 style="text-align: center">Receipt Tracker</h1>
+    <h1 style="text-align: center;font-size: 54px;color:#055e79;">Receipt Tracker</h1>
     {% if receipts|length < 1 %}
     <h4 style="text-align: center">There are no receipts. Create one below!</h4>
     {% else %}
-    <table>
+    <h2 style="text-align: center;color:#055e79">Your Receipts</h2>
+    <hr/>
+    <br>
+    <table style="height: 121px; margin-left: auto; margin-right: auto;">
         <tr>
             <th>Receipt Name</th>
             <th>Total Cost</th>
@@ -49,7 +52,9 @@
         {% endfor %}
     </table>
     {% endif %}
-
+    <br>
+    <h2 style="text-align: center;color:#055e79">Create Receipts</h2>
+    <hr/>
     <div class="form">
         <form enctype=multipart/form-data action="/" method="POST">
         	<th>Name</th>
@@ -62,7 +67,18 @@
             <input type="text" name="tag" id="tag">  <br>
             <th>Photo</th>
             <input type="file" name="file" id="file">  <br>
-            <input type="Submit" value="Add Receipt">
+            <br>
+            <input type="Submit" value="Add Receipt" style="letter-spacing: 0.1em;font-size: 15px;line-height: 35px;">
+        </form>
+    </div>
+    <br>
+    <h2 style="text-align: center;color:#055e79">Search Receipts</h2>
+    <hr/>
+     <div class="form">
+        <form enctype=multipart/form-data action="/" method="POST">
+            <th>Name</th>
+            <input type="text" placeholder = "Type something to search" name="name" id="name"> 
+            <input  type="Submit" value="Search">
         </form>
     </div>
 
