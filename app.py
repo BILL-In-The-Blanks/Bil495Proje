@@ -34,7 +34,7 @@ class Receipt(db.Model):
         return '<Receipt %r>' % self.id
 
 
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/', methods=['POST', 'GET', 'PUT'])
 def index():
     if request.method == 'POST':
         receipt_name = request.form['name']
@@ -44,6 +44,8 @@ def index():
 
        
         file = request.files['file']
+
+        
         # if user does not select file, browser also
         # submit an empty part without filename
         if file and allowed_file(file.filename):
@@ -142,6 +144,49 @@ def enter_details(id):
 
     else:
         return render_template('update_2.html', receipt=receipt)
+
+@app.route('/search',  methods=['GET', 'POST'])
+def search_results():
+    if request.method == 'POST':
+        search_string = request.form['search']
+        searchBox = request.form.getlist('searchBox')
+
+        if (len(searchBox)==0):
+            receipts1 = Receipt.query.filter(Receipt.name.like(search_string + "%")).all()   
+            receipts2 = Receipt.query.filter(Receipt.location.like(search_string + "%")).all()
+            receipts3 = Receipt.query.filter(Receipt.tag.like(search_string + "%")).all()   
+            receiptsFinal = receipts1 + receipts2 + receipts3   
+        elif(len(searchBox)==1):
+            if(searchBox[0]=="1"):
+                receipts1 = Receipt.query.filter(Receipt.name.like(search_string + "%")).all()
+                receiptsFinal = receipts1
+            elif(searchBox[0]=="2"):
+                receipts2 = Receipt.query.filter(Receipt.location.like(search_string + "%")).all()
+                receiptsFinal = receipts2
+            elif(searchBox[0]=="3"):
+                receipts3 = Receipt.query.filter(Receipt.tag.like(search_string + "%")).all()  
+                receiptsFinal = receipts3 
+        elif(len(searchBox)==2):
+            if(searchBox[0]=="1" and searchBox[1]=="2"):
+                receipts1 = Receipt.query.filter(Receipt.name.like(search_string + "%")).all()
+                receipts2 = Receipt.query.filter(Receipt.location.like(search_string + "%")).all()
+                receiptsFinal = receipts1 + receipts2
+            if(searchBox[0]=="1" and searchBox[1]=="3"):
+                receipts1 = Receipt.query.filter(Receipt.name.like(search_string + "%")).all()
+                receipts3 = Receipt.query.filter(Receipt.tag.like(search_string + "%")).all()  
+                receiptsFinal = receipts1 + receipts3 
+            if(searchBox[0]=="2" and searchBox[1]=="3"):
+                receipts3 = Receipt.query.filter(Receipt.tag.like(search_string + "%")).all() 
+                receipts2 = Receipt.query.filter(Receipt.location.like(search_string + "%")).all() 
+                receiptsFinal = receipts2 + receipts3 
+        elif(len(searchBox)==3):
+            receipts1 = Receipt.query.filter(Receipt.name.like(search_string + "%")).all()   
+            receipts2 = Receipt.query.filter(Receipt.location.like(search_string + "%")).all()
+            receipts3 = Receipt.query.filter(Receipt.tag.like(search_string + "%")).all()   
+            receiptsFinal = receipts1 + receipts2 + receipts3
+
+                   
+        return render_template('results.html', receipts=receiptsFinal)
 
 
 if __name__ == "__main__":
