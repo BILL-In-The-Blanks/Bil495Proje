@@ -11,7 +11,9 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///receipts.db'
+app.config['SQLALCHEMY_BINDS'] = {'users': 'sqlite:///receipts.db'}
 db = SQLAlchemy(app)
+
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -28,7 +30,12 @@ class Receipt(db.Model):
     location = db.Column(db.String(100), nullable=False, default="Ankara")
     photo_path = db.Column(db.String(100), nullable=False, default="")
     #photo should exist as a column as well
-    
+
+class Users(db.Model):                  #users icin ikinci database class'i. bind key kullanarak database'e erisecek
+    __bind_key__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(15), nullable=False)
+    password = db.Column(db.String(15), nullable=False)
 
     def __repr__(self):
         return '<Receipt %r>' % self.id
