@@ -11,7 +11,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///receipts.db'
-app.config['SQLALCHEMY_BINDS'] = {'users': 'sqlite:///receipts.db'}
+app.config['SQLALCHEMY_BINDS'] = {'users': 'sqlite:///users.db'}
 db = SQLAlchemy(app)
 
 
