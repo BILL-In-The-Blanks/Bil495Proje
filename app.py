@@ -34,8 +34,15 @@ class Receipt(db.Model):
 class Users(db.Model):                  #users icin ikinci database class'i. bind key kullanarak database'e erisecek
     __bind_key__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(15), nullable=False)
-    password = db.Column(db.String(15), nullable=False)
+    user_firstname = db.Column(db.String(15), nullable=False, default="admin")
+    user_lastname = db.Column(db.String(15), nullable=False, default="ADMIN")
+    user_password = db.Column(db.String(15), nullable=False, default="admin")
+    user_email =  db.Column(db.String(50), nullable=False, default="admin@etu.tr")
+    user_phone = db.Column(db.String(20), nullable=False, default="12345")
+    user_address =  db.Column(db.String(50), nullable=False,default="")
+    user_city =  db.Column(db.String(20), nullable=False, default="Ankara")
+    user_state =  db.Column(db.String(20), nullable=False, default="cankaya")
+    user_country =  db.Column(db.String(20), nullable=False, default="Turkiye")
 
     def __repr__(self):
         return '<Receipt %r>' % self.id
@@ -87,7 +94,30 @@ def login():
                 return redirect('/')
         return render_template('login.html', error=error)
 
-    
+@app.route('/signupform', methods=['GET', 'POST'])
+def signup():
+        error = None
+        if request.method == 'POST':
+            first = request.form['FirstName']
+            last = request.form['LastName']
+            password= request.form['pass']
+            email = request.form['FromEmailAddress']
+            phone = request.form['CellPhone']
+            address = request.form['StreetAddress1']
+            city = request.form['City']
+            state = request.form['State']
+            country = request.form['Country']
+
+            new_user = Users(user_firstname=first, user_lastname=last, user_password=password, user_email=email,
+                                  user_phone=phone, user_address=address, user_city=city, user_state=state,
+                             user_country=country)
+
+            user=Users(new_user)
+            db.session.add(user)
+            db.session.commit()
+
+            return redirect('/')
+        return render_template('signupform.html', error=error)
 
 @app.route('/delete/<int:id>')
 def delete(id):
@@ -103,7 +133,7 @@ def delete(id):
 @app.route('/details/<int:id>', methods=['GET', 'POST'])
 def details(id):
     receipt = Receipt.query.get_or_404(id)
-    
+
     if request.method == 'POST':
         try:
             return redirect('/')
