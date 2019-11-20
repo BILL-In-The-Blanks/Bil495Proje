@@ -111,9 +111,7 @@ def signup():
             new_user = Users(user_firstname=first, user_lastname=last, user_password=password, user_email=email,
                                   user_phone=phone, user_address=address, user_city=city, user_state=state,
                              user_country=country)
-
-            user=Users(new_user)
-            db.session.add(user)
+            db.session.add(new_user)
             db.session.commit()
 
             return redirect('/')
