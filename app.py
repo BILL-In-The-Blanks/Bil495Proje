@@ -2,6 +2,9 @@ from flask import Flask, render_template, url_for, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from werkzeug.utils import secure_filename
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 import os
 
 
@@ -13,8 +16,8 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///receipts.db'
 app.config['SQLALCHEMY_BINDS'] = {'users': 'sqlite:///users.db'}
 db = SQLAlchemy(app)
-
-
+engine = create_engine('sqlite:///users.db', echo=True)
+Session = sessionmaker(bind=engine)
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -88,10 +91,17 @@ def index():
 def login():
         error = None
         if request.method == 'POST':
-            if request.form['username'] != 'admin' or request.form['password'] != 'admin':
-                error = 'kullanici adi veya sifre yalnis.'
+            strname = request.form['username']
+            strpassword=request.form['password']
+
+            s = Session()
+            query = s.query(Users).filter(Users.user_firstname == strname, Users.user_password == strpassword)
+            result=query.first()
+            if result:
+                    return redirect('/')
             else:
-                return redirect('/')
+                error = 'kullanici adi veya sifre yalnis.'
+
         return render_template('login.html', error=error)
 
 @app.route('/signupform', methods=['GET', 'POST'])
