@@ -94,14 +94,14 @@ def login():
             strpassword=request.form['password']
 
             s = Session()
-            query = s.query(Users).filter(Users.user_firstname == strname, Users.user_password == strpassword)
+            query = s.query(Users).filter(Users.username == strname, Users.password == strpassword)
             result=query.first()
             if result:
                     return redirect('/')
             else:
                 error = 'kullanici adi veya sifre yalnis.'
 
-        return render_template('login.html', error=error)
+        return render_template('Login.html', error=error)
 
 @app.route('/signupform', methods=['GET', 'POST'])
 def signup():
@@ -115,7 +115,7 @@ def signup():
 		name = data['name']
 		
 
-		new_user = User(username = username, email = email , password=password, name=name)
+		new_user = Users(username = username, email = email , password=password, name=name)
 			
 		db.session.add(new_user)
 		db.session.commit()
