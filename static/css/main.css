@@ -1,3 +1,35 @@
+body {
+   transform: scale(1.0);
+   transform-origin: 0 0;
+   
+}
+
+nav{
+  width: 100vw;
+  background-color: #778811;
+  opacity: 0.85;
+
+}
+ul{
+  margin: 0;
+  padding: 0;
+  display: flex;
+  vertical-align: middle;
+}
+li{
+  list-style-type: none;
+  margin: 0 2vw;
+  vertical-align: middle;
+}
+
+nav.a{
+
+    color: black;
+  /*I added some padding*/
+  padding: 2vw;
+  /*also changed the font family but that's totally irrelevant*/
+  font-family: monospace;
+}
 body, html {
     margin: 0;
     font-family: sans-serif;
@@ -11,11 +43,14 @@ body, html {
 table, td, th {
     padding: 7.5px;
     border: 1px solid #aaa;
+    font-size: 12px;
 }
 
 table {
     border-collapse: collapse;
-    width: 100%;
+    width: 25%;
+
+
 }
 
 th {
@@ -43,8 +78,8 @@ body {
   box-sizing: border-box;
 }
 form.example input[type=text] {
-  padding: 10px;
-  font-size: 17px;
+  padding: 4px;
+  font-size: 12px;
   border: 1px solid grey;
   float: left;
   width: 80%;
