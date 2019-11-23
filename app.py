@@ -18,6 +18,8 @@ app.config['SQLALCHEMY_BINDS'] = {'users': 'sqlite:///users.db'}
 db = SQLAlchemy(app)
 engine = create_engine('sqlite:///users.db', echo=True)
 Session = sessionmaker(bind=engine)
+
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -36,16 +38,13 @@ class Receipt(db.Model):
 
 class Users(db.Model):                  #users icin ikinci database class'i. bind key kullanarak database'e erisecek
     __bind_key__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-    user_firstname = db.Column(db.String(15), nullable=False, default="admin")
-    user_lastname = db.Column(db.String(15), nullable=False, default="ADMIN")
-    user_password = db.Column(db.String(15), nullable=False, default="admin")
-    user_email =  db.Column(db.String(50), nullable=False, default="admin@etu.tr")
-    user_phone = db.Column(db.String(20), nullable=False, default="12345")
-    user_address =  db.Column(db.String(50), nullable=False,default="")
-    user_city =  db.Column(db.String(20), nullable=False, default="Ankara")
-    user_state =  db.Column(db.String(20), nullable=False, default="cankaya")
-    user_country =  db.Column(db.String(20), nullable=False, default="Turkiye")
+    user_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), nullable=False)
+    name = db.Column(db.String(50), default="test User", nullable=False)
+    password = db.Column(db.String(50), nullable=False)
+    address = db.Column(db.String(50), default="Sogutozu St. TOBB ETU, Ankara Turkey",nullable=False)
+    phone = db.Column(db.String(50), default="+905067350522",nullable=False)
+    email = db.Column(db.String(50), default="testuser@testaccount.com", nullable=False)
 
     def __repr__(self):
         return '<Receipt %r>' % self.id
@@ -106,26 +105,26 @@ def login():
 
 @app.route('/signupform', methods=['GET', 'POST'])
 def signup():
-        error = None
-        if request.method == 'POST':
-            first = request.form['FirstName']
-            last = request.form['LastName']
-            password= request.form['pass']
-            email = request.form['FromEmailAddress']
-            phone = request.form['CellPhone']
-            address = request.form['StreetAddress1']
-            city = request.form['City']
-            state = request.form['State']
-            country = request.form['Country']
 
-            new_user = Users(user_firstname=first, user_lastname=last, user_password=password, user_email=email,
-                                  user_phone=phone, user_address=address, user_city=city, user_state=state,
-                             user_country=country)
-            db.session.add(new_user)
-            db.session.commit()
+	if request.method == 'POST':
+	
+		data = request.form
+		username = data['username']
+		email = data['email']
+		password = data['password']
+		name = data['name']
+		
 
-            return redirect('/')
-        return render_template('signupform.html', error=error)
+		new_user = User(username = username, email = email , password=password, name=name)
+			
+		db.session.add(new_user)
+		db.session.commit()
+
+		return redirect('/login')
+	else:
+		return render_template('Register.html')
+
+        
 
 @app.route('/delete/<int:id>')
 def delete(id):
