@@ -134,14 +134,14 @@ def signup():
 
         
 
-@app.route('/delete/<int:id>')
-def delete(id):
+@app.route('/<int:user_id>/delete/<int:id>')
+def delete(user_id, id):
     receipt_to_delete = Receipt.query.get_or_404(id)
 
     try:
         db.session.delete(receipt_to_delete)
         db.session.commit()
-        return redirect('/')
+        return index_user(user_id)
     except:
         return 'There was a problem deleting that receipt'
 
@@ -193,8 +193,8 @@ def update(id):
     else:
         return render_template('update.html', receipt=receipt)
 
-@app.route('/enter_details/<int:id>', methods=['GET', 'POST'])
-def enter_details(id):
+@app.route('/<int:user_id>/enter_details/<int:id>', methods=['GET', 'POST'])
+def enter_details(user_id, id):
     receipt = Receipt.query.get_or_404(id)
 
     if request.method == 'POST':

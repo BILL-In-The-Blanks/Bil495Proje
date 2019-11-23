@@ -68,11 +68,11 @@
                 <td>{{ "No Photo" }}</td>
                 {% endif %}
                 <td>
-                    <a href="/delete/{{receipt.id}}">Delete</a>
+                    <a href='/{{user.user_id}}/delete/{{receipt.id}}'>Delete</a>
                     <br>
-                    <a href="/update/{{receipt.id}}">Edit</a>
+                    <a href="/{{user.user_id}}/update/{{receipt.id}}">Edit</a>
                     <br>
-                    <a href="/details/{{receipt.id}}">Details</a>
+                    <a href="/{{user.user_id}}/details/{{receipt.id}}">Details</a>
                 </td>
             </tr>
         {% endfor %}
