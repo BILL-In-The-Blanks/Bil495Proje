@@ -4,6 +4,8 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from flask import Blueprint, request, render_template, \
+                  jsonify, g, session, redirect, make_response
 
 import os
 
@@ -13,11 +15,10 @@ UPLOAD_FOLDER = "/static/uploads"
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///receipts.db'
-app.config['SQLALCHEMY_BINDS'] = {'users': 'sqlite:///users.db'}
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///receiptBase.db'
+
 db = SQLAlchemy(app)
-engine = create_engine('sqlite:///users.db', echo=True)
-Session = sessionmaker(bind=engine)
+
 
 
 def allowed_file(filename):
@@ -34,10 +35,10 @@ class Receipt(db.Model):
     total_cost = db.Column(db.Float, nullable=False, default=25)
     location = db.Column(db.String(100), nullable=False, default="Ankara")
     photo_path = db.Column(db.String(100), nullable=False, default="")
-    #photo should exist as a column as well
+    
 
 class Users(db.Model):                  #users icin ikinci database class'i. bind key kullanarak database'e erisecek
-    __bind_key__ = 'users'
+    
     user_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False)
     name = db.Column(db.String(50), default="test User", nullable=False)
@@ -50,8 +51,8 @@ class Users(db.Model):                  #users icin ikinci database class'i. bin
         return '<Receipt %r>' % self.id
 
 
-@app.route('/', methods=['POST', 'GET', 'PUT'])
-def index():
+@app.route('/<int:user_id>', methods=['POST', 'GET', 'PUT'])
+def index(user_id):
     if request.method == 'POST':
         receipt_name = request.form['name']
         receipt_location = request.form['location']
@@ -85,23 +86,31 @@ def index():
         receipts = Receipt.query.order_by(Receipt.date_created).all()
         return render_template('index.html', receipts=receipts)
 
+@app.route('/<int:user_id>/', methods=['POST', 'GET'])
+def index_user(user_id):
+
     
+    receipts = Receipt.query.filter_by(belonging_user_id = user_id).all()
+    user = Users.query.get_or_404(user_id)
+
+    return render_template('index.html', receipts=receipts, user=user)
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-        error = None
+        
         if request.method == 'POST':
             strname = request.form['username']
             strpassword=request.form['password']
 
-            s = Session()
-            query = s.query(Users).filter(Users.username == strname, Users.password == strpassword)
-            result=query.first()
-            if result:
-                    return redirect('/')
-            else:
-                error = 'kullanici adi veya sifre yalnis.'
+            user = Users.query.filter_by(username = strname).first()
 
-        return render_template('Login.html', error=error)
+            if user and user.password == strpassword:
+                return index_user(user.user_id)
+            else:
+            	return make_response('Username or password is incorrect!', 401)
+        
+
+        return render_template('Login.html')
 
 @app.route('/signupform', methods=['GET', 'POST'])
 def signup():
