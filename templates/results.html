@@ -24,31 +24,31 @@
             <th>Actions</th>
         </tr>
         {% for receipt in receipts %}
-            <tr>
-                <td>{{ receipt.name }}</td>
-                <td>{{ receipt.total_cost }}</td>
-                <td>{{ receipt.location }}</td>
-                <td>{{ receipt.tag }}</td>
-                <td>{{ receipt.date_created.date() }}</td>
-                {% if receipt.photo_path != "" %}
-                <td>
-                	<body>
-                
-                		<img src={{receipt.photo_path}} width="75" height="75" alt="{{receipt.photo_path}}">
-                	</body>	
-                </td>
-            	
-                {% else %}
-                <td>{{ "No Photo" }}</td>
-                {% endif %}
-                <td>
-                    <a href="/delete/{{receipt.id}}">Delete</a>
-                    <br>
-                    <a href="/update/{{receipt.id}}">Edit</a>
-                    <br>
-                    <a href="/details/{{receipt.id}}">Details</a>
-                </td>
-            </tr>
+        <tr>
+            <td>{{ receipt.name }}</td>
+            <td>{{ receipt.total_cost }}</td>
+            <td>{{ receipt.location }}</td>
+            <td>{{ receipt.tag }}</td>
+            <td>{{ receipt.date_created.date() }}</td>
+            {% if receipt.photo_path != "" %}
+            <td>
+                <body>
+
+                <img src={{receipt.photo_path}} width="75" height="75" alt="{{receipt.photo_path}}">
+                </body>
+            </td>
+
+            {% else %}
+            <td>{{ "No Photo" }}</td>
+            {% endif %}
+            <td>
+                <a href="/delete/{{receipt.id}}">Delete</a>
+                <br>
+                <a href="/update/{{receipt.id}}">Edit</a>
+                <br>
+                <a href="/details/{{receipt.id}}">Details</a>
+            </td>
+        </tr>
         {% endfor %}
     </table>
     {% endif %}

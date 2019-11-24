@@ -252,6 +252,7 @@ def search_results(user_id):
 
         return render_template('index.html', receipts=receiptsFinal, user=Users.query.get_or_404(user_id))
 
+
 @app.route('/<int:user_id>/userPage/', methods=['POST', 'GET'])
 def userPage(user_id):
     user = Users.query.get_or_404(user_id)
@@ -260,13 +261,12 @@ def userPage(user_id):
 
     return render_template('userPage.html', user=user, receipt=receipts)
 
+
 @app.route('/userSettings/int:user_id', methods=['POST', 'GET'])
 def userSettings(user_id):
     user = Users.query.get_or_404(user_id)
     receipts = Receipt.query.order_by(Receipt.id).all()
     return render_template('userSettings.html', user=user, receipt=receipts)
-
-
 
 
 if __name__ == "__main__":
