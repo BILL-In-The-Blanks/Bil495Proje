@@ -10,8 +10,8 @@
 
     <div class="form">
         <form enctype=multipart/form-data action="/update/{{receipt.id}}" method="POST">
-        	Name
-            <input type="text" name="name" id="name" value="{{receipt.name}}" ><br>
+            Name
+            <input type="text" name="name" id="name" value="{{receipt.name}}"><br>
             Cost
             <input type="text" name="total_cost" id="total_cost" value="{{receipt.total_cost}}"><br>
             Location
@@ -22,9 +22,9 @@
             <input type="date" name="date_created" id="date_created" value="{{receipt.date_created.date()}}"><br>
             Photo
             <input type="file" name="file" id="file"><br>
-            
-            
-            <input style="text-align: center" type="submit"  value="Edit">
+
+
+            <input style="text-align: center" type="submit" value="Edit">
         </form>
     </div>
 </div>

@@ -5,10 +5,9 @@ from werkzeug.utils import secure_filename
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from flask import Blueprint, request, render_template, \
-                  jsonify, g, session, redirect, make_response
+    jsonify, g, session, redirect, make_response
 
 import os
-
 
 PATH = os.getcwd()
 UPLOAD_FOLDER = "/static/uploads"
@@ -20,10 +19,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///receiptBase.db'
 db = SQLAlchemy(app)
 
 
-
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 class Receipt(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -35,16 +34,16 @@ class Receipt(db.Model):
     total_cost = db.Column(db.Float, nullable=False, default=25)
     location = db.Column(db.String(100), nullable=False, default="Ankara")
     photo_path = db.Column(db.String(100), nullable=False, default="")
-    
 
-class Users(db.Model):                  #users icin ikinci database class'i. bind key kullanarak database'e erisecek
-    
+
+class Users(db.Model):  # users icin ikinci database class'i. bind key kullanarak database'e erisecek
+
     user_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False)
     name = db.Column(db.String(50), default="test User", nullable=False)
     password = db.Column(db.String(50), nullable=False)
-    address = db.Column(db.String(50), default="Sogutozu St. TOBB ETU, Ankara Turkey",nullable=False)
-    phone = db.Column(db.String(50), default="+905067350522",nullable=False)
+    address = db.Column(db.String(50), default="Sogutozu St. TOBB ETU, Ankara Turkey", nullable=False)
+    phone = db.Column(db.String(50), default="+905067350522", nullable=False)
     email = db.Column(db.String(50), default="testuser@testaccount.com", nullable=False)
 
     def __repr__(self):
@@ -53,86 +52,80 @@ class Users(db.Model):                  #users icin ikinci database class'i. bin
 
 @app.route('/<int:user_id>/', methods=['GET'])
 def index_user(user_id):
-
-    
-    receipts = Receipt.query.filter_by(belonging_user_id = user_id).all()
+    receipts = Receipt.query.filter_by(belonging_user_id=user_id).all()
     user = Users.query.get_or_404(user_id)
 
     return render_template('index.html', receipts=receipts, user=user)
+
+
 @app.route('/<int:user_id>/', methods=['POST'])
 def index_user1(user_id):
+    print("DONE")
+    user = Users.query.get_or_404(user_id)
 
-	print("DONE")
-	user = Users.query.get_or_404(user_id)
+    receipt_name = request.form['name']
+    receipt_location = request.form['location']
+    receipt_tag = request.form['tag']
+    receipt_total_cost = request.form['total_cost']
 
-	receipt_name = request.form['name']
-	receipt_location = request.form['location']
-	receipt_tag = request.form['tag'] 
-	receipt_total_cost = request.form['total_cost']
+    file = request.files['file']
 
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(PATH + UPLOAD_FOLDER, filename))
+        receipt_photo_path = os.path.join(UPLOAD_FOLDER, filename)
+    else:
+        receipt_photo_path = ""
 
-	file = request.files['file']
+    new_receipt = Receipt(name=receipt_name, total_cost=receipt_total_cost, location=receipt_location, tag=receipt_tag,
+                          photo_path=receipt_photo_path, belonging_user_id=user.user_id)
 
-	if file and allowed_file(file.filename):
-		filename = secure_filename(file.filename)
-		file.save(os.path.join(PATH + UPLOAD_FOLDER, filename))
-		receipt_photo_path = os.path.join(UPLOAD_FOLDER, filename)
-	else:
-		receipt_photo_path = ""
+    try:
 
+        print("DONE2")
+        db.session.add(new_receipt)
+        db.session.commit()
+        receipts = Receipt.query.filter_by(belonging_user_id=user_id).all()
+        return render_template('index.html', receipts=receipts, user=user)
+    except:
+        return 'There was an issue adding your receipt'
 
-	new_receipt = Receipt(name=receipt_name,total_cost=receipt_total_cost, location=receipt_location, tag=receipt_tag, photo_path=receipt_photo_path, belonging_user_id=user.user_id)
-
-
-	try:
-
-		print("DONE2")
-		db.session.add(new_receipt)
-		db.session.commit()
-		receipts = Receipt.query.filter_by(belonging_user_id = user_id).all()
-		return render_template('index.html', receipts=receipts, user=user)
-	except:
-		return 'There was an issue adding your receipt'
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-        
-        if request.method == 'POST':
-            strname = request.form['username']
-            strpassword=request.form['password']
+    if request.method == 'POST':
+        strname = request.form['username']
+        strpassword = request.form['password']
 
-            user = Users.query.filter_by(username = strname).first()
+        user = Users.query.filter_by(username=strname).first()
 
-            if user and user.password == strpassword:
-                return index_user(user.user_id)
-            else:
-            	return make_response('Username or password is incorrect!', 401)
-        
+        if user and user.password == strpassword:
+            return index_user(user.user_id)
+        else:
+            return make_response('Username or password is incorrect!', 401)
 
-        return render_template('Login.html')
+    return render_template('Login.html')
+
 
 @app.route('/signupform', methods=['GET', 'POST'])
 def signup():
+    if request.method == 'POST':
 
-	if request.method == 'POST':
-	
-		data = request.form
-		username = data['username']
-		email = data['email']
-		password = data['password']
-		name = data['name']
-		
+        data = request.form
+        username = data['username']
+        email = data['email']
+        password = data['password']
+        name = data['name']
 
-		new_user = Users(username = username, email = email , password=password, name=name)
-			
-		db.session.add(new_user)
-		db.session.commit()
+        new_user = Users(username=username, email=email, password=password, name=name)
 
-		return redirect('/login')
-	else:
-		return render_template('Register.html')
+        db.session.add(new_user)
+        db.session.commit()
 
-        
+        return redirect('/login')
+    else:
+        return render_template('Register.html')
+
 
 @app.route('/<int:user_id>/delete/<int:id>')
 def delete(user_id, id):
@@ -145,8 +138,9 @@ def delete(user_id, id):
     except:
         return 'There was a problem deleting that receipt'
 
-@app.route('/details/<int:id>', methods=['GET', 'POST'])
-def details(id):
+
+@app.route('/<int:user_id>/details/<int:id>', methods=['GET', 'POST'])
+def details(user_id, id):
     receipt = Receipt.query.get_or_404(id)
 
     if request.method == 'POST':
@@ -157,10 +151,10 @@ def details(id):
     else:
         return render_template('details.html', receipt=receipt)
 
-@app.route('/update/<int:id>', methods=['GET', 'POST'])
-def update(id):
-    receipt = Receipt.query.get_or_404(id)
 
+@app.route('/<int:user_id>/update/<int:id>', methods=['GET', 'POST'])
+def update(user_id, id):
+    receipt = Receipt.query.get_or_404(id)
 
     if request.method == 'POST':
         receipt.name = request.form['name']
@@ -179,9 +173,9 @@ def update(id):
         else:
             receipt_photo_path = ""
 
-        #Convert browser date format to sqlite date format 
+        # Convert browser date format to sqlite date format
         Ddate_created = datetime.strptime(date_created, '%Y-%m-%d')
-        
+
         receipt.date_created = Ddate_created.date()
 
         try:
@@ -192,6 +186,7 @@ def update(id):
 
     else:
         return render_template('update.html', receipt=receipt)
+
 
 @app.route('/<int:user_id>/enter_details/<int:id>', methods=['GET', 'POST'])
 def enter_details(user_id, id):
@@ -209,53 +204,69 @@ def enter_details(user_id, id):
     else:
         return render_template('update_2.html', receipt=receipt)
 
-@app.route('/search/<int:user_id>',  methods=['GET', 'POST'])
+
+@app.route('/search/<int:user_id>', methods=['GET', 'POST'])
 def search_results(user_id):
     if request.method == 'POST':
-    	receipts = Receipt.query.filter_by(belonging_user_id = user_id)
-    	search_string = request.form['search']
-    	searchBox = request.form.getlist('searchBox')
+        receipts = Receipt.query.filter_by(belonging_user_id=user_id)
+        search_string = request.form['search']
+        searchBox = request.form.getlist('searchBox')
 
-    	if(search_string==""):
-	       	return render_template('index.html', receipts = receipts.all(), user=Users.query.get_or_404(user_id))
-    	if(len(searchBox)==0):
-	        	
-        	receipts1 = Receipt.query.filter(Receipt.name.like(search_string + "%")) 
-	        receipts2 = Receipt.query.filter(Receipt.location.like(search_string + "%"))
-	        receipts3 = Receipt.query.filter(Receipt.tag.like(search_string + "%"))   
-	        receiptsFinal = receipts1.union(receipts2).union(receipts3)
-	        receiptsFinal = receiptsFinal.intersect(receipts).all()
-    	elif(len(searchBox)==1):
-    		if(searchBox[0]=="1"):
-		        receipts1 = Receipt.query.filter(Receipt.name.like(search_string + "%"))
-		        receiptsFinal = receipts1.intersect(receipts).all()
-    		elif(searchBox[0]=="2"):
-		        receipts2 = Receipt.query.filter(Receipt.location.like(search_string + "%"))
-		        receiptsFinal = receipts2.intersect(receipts).all()
-    		elif(searchBox[0]=="3"):
-		        receipts3 = Receipt.query.filter(Receipt.tag.like(search_string + "%"))
-		        receiptsFinal = receipts3.intersect(receipts).all() 
-    	elif(len(searchBox)==2):
-	        if(searchBox[0]=="1" and searchBox[1]=="2"):
-	            receipts1 = Receipt.query.filter(Receipt.name.like(search_string + "%"))
-	            receipts2 = Receipt.query.filter(Receipt.location.like(search_string + "%"))
-	            receiptsFinal = (receipts1.union(receipts2)).intersect(receipts).all()
-	        if(searchBox[0]=="1" and searchBox[1]=="3"):
-	            receipts1 = Receipt.query.filter(Receipt.name.like(search_string + "%"))
-	            receipts3 = Receipt.query.filter(Receipt.tag.like(search_string + "%"))
-	            receiptsFinal = (receipts1.union(receipts3)).intersect(receipts).all()
-	        if(searchBox[0]=="2" and searchBox[1]=="3"):
-	            receipts3 = Receipt.query.filter(Receipt.tag.like(search_string + "%"))
-	            receipts2 = Receipt.query.filter(Receipt.location.like(search_string + "%"))
-	            receiptsFinal = (receipts2.union(receipts3)).intersect(receipts).all()
-    	elif(len(searchBox)==3):
-	        receipts1 = Receipt.query.filter(Receipt.name.like(search_string + "%")) 
-	        receipts2 = Receipt.query.filter(Receipt.location.like(search_string + "%"))
-	        receipts3 = Receipt.query.filter(Receipt.tag.like(search_string + "%"))   
-	        receiptsFinal = (((receipts1.union(receipts2)).union(receipts3)).intersect(receipts)).all()
+        if (search_string == ""):
+            return render_template('index.html', receipts=receipts.all(), user=Users.query.get_or_404(user_id))
+        if (len(searchBox) == 0):
 
-	               
-    	return render_template('index.html', receipts=receiptsFinal, user=Users.query.get_or_404(user_id))
+            receipts1 = Receipt.query.filter(Receipt.name.like(search_string + "%"))
+            receipts2 = Receipt.query.filter(Receipt.location.like(search_string + "%"))
+            receipts3 = Receipt.query.filter(Receipt.tag.like(search_string + "%"))
+            receiptsFinal = receipts1.union(receipts2).union(receipts3)
+            receiptsFinal = receiptsFinal.intersect(receipts).all()
+        elif (len(searchBox) == 1):
+            if (searchBox[0] == "1"):
+                receipts1 = Receipt.query.filter(Receipt.name.like(search_string + "%"))
+                receiptsFinal = receipts1.intersect(receipts).all()
+            elif (searchBox[0] == "2"):
+                receipts2 = Receipt.query.filter(Receipt.location.like(search_string + "%"))
+                receiptsFinal = receipts2.intersect(receipts).all()
+            elif (searchBox[0] == "3"):
+                receipts3 = Receipt.query.filter(Receipt.tag.like(search_string + "%"))
+                receiptsFinal = receipts3.intersect(receipts).all()
+        elif (len(searchBox) == 2):
+            if (searchBox[0] == "1" and searchBox[1] == "2"):
+                receipts1 = Receipt.query.filter(Receipt.name.like(search_string + "%"))
+                receipts2 = Receipt.query.filter(Receipt.location.like(search_string + "%"))
+                receiptsFinal = (receipts1.union(receipts2)).intersect(receipts).all()
+            if (searchBox[0] == "1" and searchBox[1] == "3"):
+                receipts1 = Receipt.query.filter(Receipt.name.like(search_string + "%"))
+                receipts3 = Receipt.query.filter(Receipt.tag.like(search_string + "%"))
+                receiptsFinal = (receipts1.union(receipts3)).intersect(receipts).all()
+            if (searchBox[0] == "2" and searchBox[1] == "3"):
+                receipts3 = Receipt.query.filter(Receipt.tag.like(search_string + "%"))
+                receipts2 = Receipt.query.filter(Receipt.location.like(search_string + "%"))
+                receiptsFinal = (receipts2.union(receipts3)).intersect(receipts).all()
+        elif (len(searchBox) == 3):
+            receipts1 = Receipt.query.filter(Receipt.name.like(search_string + "%"))
+            receipts2 = Receipt.query.filter(Receipt.location.like(search_string + "%"))
+            receipts3 = Receipt.query.filter(Receipt.tag.like(search_string + "%"))
+            receiptsFinal = (((receipts1.union(receipts2)).union(receipts3)).intersect(receipts)).all()
+
+        return render_template('index.html', receipts=receiptsFinal, user=Users.query.get_or_404(user_id))
+
+@app.route('/<int:user_id>/userPage/', methods=['POST', 'GET'])
+def userPage(user_id):
+    user = Users.query.get_or_404(user_id)
+
+    receipts = Receipt.query.order_by(Receipt.id).all()
+
+    return render_template('userPage.html', user=user, receipt=receipts)
+
+@app.route('/userSettings/int:user_id', methods=['POST', 'GET'])
+def userSettings(user_id):
+    user = Users.query.get_or_404(user_id)
+    receipts = Receipt.query.order_by(Receipt.id).all()
+    return render_template('userSettings.html', user=user, receipt=receipts)
+
+
 
 
 if __name__ == "__main__":
