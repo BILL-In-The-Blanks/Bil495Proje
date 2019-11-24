@@ -158,6 +158,30 @@ def details(user_id, id):
     else:
         return render_template('details.html', receipt=receipt, user=user)
 
+
+@app.route('/<int:user_id>/share/<int:id>', methods=['GET', 'POST'])
+def share(user_id, id):
+
+    receipt = Receipt.query.get_or_404(id)
+    user = Users.query.get_or_404(user_id)
+
+    if request.method == 'POST':
+        try:
+            return index_user(user_id)
+        except:
+            return 'There was an issue'
+    else:
+        return render_template('Share.html', receipt=receipt, user=user)
+
+@app.route('/<int:user_id>/share/<int:id>/', methods=['GET'])
+def share_view(user_id, id):
+
+    receipt = Receipt.query.get_or_404(id)
+    user = Users.query.get_or_404(user_id)
+
+    return render_template('ShareView.html', receipt=receipt, user=user)
+
+
 @app.route('/<int:user_id>/update/<int:id>', methods=['GET', 'POST'])
 def update(user_id, id):
     user = Users.query.get_or_404(user_id)
