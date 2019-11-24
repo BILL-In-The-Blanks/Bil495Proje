@@ -27,7 +27,10 @@ For more details, you can check out the logs of the application.
 
 ### Online Demo
 
-You can check the online running demo of our project at [Heroku](https://bill-in-the-blanks.herokuapp.com/login).
+You can check the online demo of our project at [Heroku](https://bill-in-the-blanks.herokuapp.com/login).
+
+###### Try it with test user:  
+ID: e12, Password: 123
 
 ### Useful Links
 
