@@ -21,15 +21,23 @@ $ python3 app.py
 ```
 After running the commands, you should be able to see the running demo on localhost in your preferred browser.
 
-The default local server should be reachable via [127.0.0.1:5000](http://127.0.0.1:5000).
+The default local server should be reachable via [127.0.0.1:5000](http://127.0.0.1:5000/login).
 
 For more details, you can check out the logs of the application.
 
 ### Online Demo
 
-You can check the online running demo of our project at [Heroku](https://bill-in-the-blanks.herokuapp.com/).
+You can check the online running demo of our project at [Heroku](https://bill-in-the-blanks.herokuapp.com/login).
+
+### Useful Links
+
+[Login Page](https://bill-in-the-blanks.herokuapp.com/login)
+
+[Register Page](https://bill-in-the-blanks.herokuapp.com/signupform)
+
 
 ### Team
+
 [Erhan Baturay Onural](https://github.com/BaturayOnural)
 
 [Erhan Eker](https://github.com/erhanekerr)
